@@ -1,4 +1,4 @@
-name: RepoScope Security Scanner
+name: RepoScope Security scanning + AI-code provenance
 description: >-
   Security scanner + AI-code provenance for your codebase. 30 detectors, PR review comments, CWE IDs, and a security score.
 author: NxGen Tech Solutions

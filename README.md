@@ -1,4 +1,4 @@
-# RepoScope Security Scanner
+# RepoScope Security scanning + AI-code provenance
 
 > Scan your codebase for security vulnerabilities **and AI-code provenance** on every push and pull request — inline PR comments, a build-gating security score, and a shareable HTML report.
 
