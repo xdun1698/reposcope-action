@@ -1,8 +1,6 @@
 name: RepoScope Security & Compliance Scanner
-description: >
-  Scan your codebase for security vulnerabilities, map findings to OWASP Top 10 / SOC 2 /
-  PCI-DSS / EU AI Act Article 12 / ISO 42001, and generate an audit-ready HTML evidence
-  package as a build artifact. Posts one PR review comment per finding.
+description: >-
+  Security scanner + compliance reports for your codebase. OWASP, SOC 2, PCI-DSS, EU AI Act, ISO 42001.
 author: NxGen Tech Solutions
 branding:
   icon: shield
