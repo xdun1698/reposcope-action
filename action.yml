@@ -1,0 +1,83 @@
+name: RepoScope Security & Compliance Scanner
+description: >
+  Scan your codebase for security vulnerabilities, map findings to OWASP Top 10 / SOC 2 /
+  PCI-DSS / EU AI Act Article 12 / ISO 42001, and generate an audit-ready HTML evidence
+  package as a build artifact. Posts one PR review comment per finding.
+author: NxGen Tech Solutions
+branding:
+  icon: shield
+  color: green
+
+inputs:
+  token:
+    description: >
+      GitHub token used to post PR review comments and create Check runs.
+      Use secrets.GITHUB_TOKEN for standard repos.
+    required: true
+    default: ${{ github.token }}
+
+  workspace-path:
+    description: >
+      Root directory to scan. Defaults to the GitHub Actions workspace
+      (the repository root after checkout).
+    required: false
+    default: ${{ github.workspace }}
+
+  fail-on:
+    description: >
+      Minimum severity that causes the action to exit with code 1.
+      Options: none | low | medium | high | critical
+    required: false
+    default: high
+
+  threshold:
+    description: >
+      Fail the build if the overall security score is below this number (0–100).
+      Set to 0 to disable. Score is 100 minus a weighted penalty per finding.
+    required: false
+    default: '0'
+
+  frameworks:
+    description: >
+      Comma-separated compliance frameworks to include in the report.
+      Options: owasp, soc2, pci-dss, eu-ai-act, iso-42001
+    required: false
+    default: owasp,soc2,pci-dss
+
+  comment-on-pr:
+    description: >
+      When true, post inline PR review comments for each finding. Set to false
+      to suppress comments (useful in push-only or scheduled runs).
+    required: false
+    default: 'true'
+
+  report-path:
+    description: >
+      Where to write the HTML compliance report inside the workspace.
+      Relative to workspace-path.
+    required: false
+    default: .reposcope/report.html
+
+outputs:
+  security-score:
+    description: >
+      Overall security score 0–100 (higher is safer). Computed as
+      100 minus a weighted penalty per finding (severity × confidence).
+
+  findings-count:
+    description: >
+      Total number of deduplicated findings after inline suppression.
+
+  critical-count:
+    description: Number of critical severity findings.
+
+  high-count:
+    description: Number of high severity findings.
+
+  report-path:
+    description: >
+      Absolute path to the generated HTML compliance report artifact.
+
+runs:
+  using: node20
+  main: dist/index.js

@@ -1,0 +1,41 @@
+{
+  "name": "reposcope-action",
+  "version": "1.0.0",
+  "description": "Security scanner + compliance posture reporter for GitHub Actions — by NxGen Tech Solutions",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc --outDir build && ncc build build/index.js -o dist --minify --license dist/licenses.txt && rm -rf build",
+    "compile": "tsc",
+    "package": "npm run build",
+    "lint": "eslint src/ --ext .ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nxgentech/reposcope-action"
+  },
+  "keywords": [
+    "github-action",
+    "security",
+    "compliance",
+    "owasp",
+    "soc2",
+    "pci-dss",
+    "eu-ai-act",
+    "code-scanner",
+    "devsecops",
+    "vulnerability"
+  ],
+  "author": "NxGen Tech Solutions <support@reposcope.app>",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/artifact": "^2.1.11",
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@vercel/ncc": "^0.38.1",
+    "typescript": "^5.4.5"
+  }
+}
