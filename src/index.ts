@@ -28,8 +28,6 @@ async function run(): Promise<void> {
     const workspacePath = core.getInput('workspace-path') || process.env.GITHUB_WORKSPACE || process.cwd()
     const failOn = core.getInput('fail-on') || 'high'
     const threshold = parseInt(core.getInput('threshold') || '0', 10)
-    const frameworksInput = core.getInput('frameworks') || 'owasp,soc2,pci-dss'
-    const frameworks = frameworksInput.split(',').map((f) => f.trim().toLowerCase()).filter(Boolean)
     const commentOnPr = core.getInput('comment-on-pr') !== 'false'
     const reportRelPath = core.getInput('report-path') || '.reposcope/report.html'
     const reportAbsPath = path.resolve(workspacePath, reportRelPath)
@@ -42,7 +40,6 @@ async function run(): Promise<void> {
     core.info(`Workspace: ${workspacePath}`)
     core.info(`Fail on severity: ${failOn}`)
     core.info(`Score threshold: ${threshold}`)
-    core.info(`Frameworks: ${frameworks.join(', ')}`)
     core.info(`Comment on PR: ${commentOnPr}`)
     core.endGroup()
 
@@ -59,7 +56,7 @@ async function run(): Promise<void> {
 
     core.startGroup('RepoScope — generating report')
     const repoName = `${owner}/${repo}`
-    const html = generateReport(result, frameworks, repoName)
+    const html = generateReport(result, repoName)
     writeReport(html, reportAbsPath)
     core.info(`Report written to ${reportAbsPath}`)
     core.endGroup()

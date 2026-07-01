@@ -1,6 +1,6 @@
-name: RepoScope Security & Compliance Scanner
+name: RepoScope Security Scanner
 description: >-
-  Security scanner + compliance reports for your codebase. OWASP, SOC 2, PCI-DSS, EU AI Act, ISO 42001.
+  Security scanner for your codebase. 44 detectors, PR review comments, CWE IDs, and a build-gating security score.
 author: NxGen Tech Solutions
 branding:
   icon: shield
@@ -35,13 +35,6 @@ inputs:
     required: false
     default: '0'
 
-  frameworks:
-    description: >
-      Comma-separated compliance frameworks to include in the report.
-      Options: owasp, soc2, pci-dss, eu-ai-act, iso-42001
-    required: false
-    default: owasp,soc2,pci-dss
-
   comment-on-pr:
     description: >
       When true, post inline PR review comments for each finding. Set to false
@@ -51,7 +44,7 @@ inputs:
 
   report-path:
     description: >
-      Where to write the HTML compliance report inside the workspace.
+      Where to write the HTML security report inside the workspace.
       Relative to workspace-path.
     required: false
     default: .reposcope/report.html
@@ -74,7 +67,7 @@ outputs:
 
   report-path:
     description: >
-      Absolute path to the generated HTML compliance report artifact.
+      Absolute path to the generated HTML security report artifact.
 
 runs:
   using: node20

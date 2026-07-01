@@ -1,8 +1,8 @@
-# RepoScope Security & Compliance Scanner
+# RepoScope Security Scanner
 
-> Scan your codebase for security vulnerabilities, map findings to 5 compliance frameworks, and generate an audit-ready evidence package — all from your GitHub Actions workflow.
+> Scan your codebase for security vulnerabilities on every push and pull request — inline PR comments, a build-gating security score, and a shareable HTML report.
 
-[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-RepoScope-blue?logo=github)](https://github.com/marketplace/actions/reposcope-security-compliance-scanner)
+[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-RepoScope-blue?logo=github)](https://github.com/marketplace/actions/reposcope-security-scanner)
 [![GitHub repo](https://img.shields.io/badge/Source-xdun1698%2Freposcope--action-lightgrey?logo=github)](https://github.com/xdun1698/reposcope-action)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -12,11 +12,13 @@
 
 On every pull request or push, RepoScope:
 
-1. **Scans every source file** for 44 security detectors across 14 languages — secrets, SQL injection, XSS, command injection, TLS misconfigs, weak crypto, and more.
+1. **Scans every source file** with 44 security detectors across 14 languages — secrets, SQL injection, XSS, command injection, TLS misconfigs, weak crypto, and more.
 2. **Posts one PR review comment per finding** — file, line number, severity badge, CWE ID, and a concrete fix hint.
 3. **Creates a GitHub Check** — `RepoScope Security — PASS` or `FAIL` with your configurable score threshold.
-4. **Generates a compliance report** mapping every finding to OWASP Top 10 (2021), SOC 2 Type II, PCI-DSS v4.0, EU AI Act Article 12, and ISO/IEC 42001 — uploaded as a build artifact.
+4. **Generates an HTML security report** — findings by type + full detail, uploaded as a build artifact.
 5. **Optionally fails the build** if any finding meets or exceeds your configured severity threshold.
+
+> Looking for **compliance mapping** (OWASP / SOC 2 / PCI-DSS / EU AI Act / ISO 42001) and **audit-ready evidence packages**? Those are RepoScope Pro features — see [In-editor + compliance](#in-editor--compliance) below.
 
 ---
 
@@ -54,7 +56,6 @@ jobs:
 | `workspace-path` | `${{ github.workspace }}` | Directory to scan. Defaults to the repo root after checkout. |
 | `fail-on` | `high` | Minimum severity that fails the build. Options: `none` \| `low` \| `medium` \| `high` \| `critical` |
 | `threshold` | `0` | Fail if the overall security score (0–100) drops below this value. `0` disables. |
-| `frameworks` | `owasp,soc2,pci-dss` | Comma-separated compliance frameworks in the report. Options: `owasp`, `soc2`, `pci-dss`, `eu-ai-act`, `iso-42001` |
 | `comment-on-pr` | `true` | Post inline review comments per finding. Set `false` for push-only runs. |
 | `report-path` | `.reposcope/report.html` | Relative path (within the workspace) where the HTML report is saved. |
 
@@ -91,17 +92,6 @@ jobs:
     threshold: 80
 ```
 
-### Full EU AI Act + ISO 42001 compliance report
-
-```yaml
-- uses: xdun1698/reposcope-action@v1
-  with:
-    token: ${{ secrets.GITHUB_TOKEN }}
-    frameworks: owasp,soc2,pci-dss,eu-ai-act,iso-42001
-    fail-on: high
-    threshold: 70
-```
-
 ### Use outputs in a downstream step
 
 ```yaml
@@ -133,20 +123,6 @@ RepoScope ships **44 detectors** across **14 languages**, including:
 
 ---
 
-## Compliance frameworks
-
-Each finding is mapped to controls in:
-
-- **OWASP Top 10 (2021)** — A01–A10
-- **SOC 2 Type II** — CC6.1, CC6.6, CC6.7, CC7.1, CC8.1
-- **PCI-DSS v4.0** — Requirements 3, 4, 6, 8, 12
-- **EU AI Act Article 12** — Traceability + cybersecurity controls
-- **ISO/IEC 42001** — AI risk assessment + lifecycle security
-
-> **Disclaimer:** This tool covers code-level controls only. It is a development aid, not a certification or legal compliance tool. Manual review is required before use in any formal audit.
-
----
-
 ## Suppress false positives
 
 Add an inline comment on the finding line (or the line above) to suppress it:
@@ -162,9 +138,16 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
 ---
 
-## For in-editor findings
+## In-editor + compliance
 
-Install the **[RepoScope VS Code extension](https://marketplace.visualstudio.com/items?itemName=nxgentech.reposcope-ai)** to see the same findings live as you write code, with compliance posture scoring, AI Game Plan, and 1-click audit evidence packages — in VS Code, Cursor, and Devin Desktop.
+This action covers **security scanning**. For the full RepoScope experience, install the **[RepoScope extension](https://marketplace.visualstudio.com/items?itemName=nxgentech.reposcope-ai)** (VS Code, Cursor, Devin Desktop):
+
+- **Live findings** as you write code, not just in CI
+- **Compliance posture** — maps findings to OWASP Top 10 (2021), SOC 2 Type II, PCI-DSS v4.0, EU AI Act Article 12, and ISO/IEC 42001 with per-control PASS/PARTIAL/FAIL status
+- **Audit evidence packages** — one-click Control Matrix, Attestation Memo, Gap Plan, and Auditor Evidence Response
+- **Cost & Budget intelligence**, **AI Game Plan**, and **code provenance** tracking
+
+Free tier includes the security scanner + Repo Map + provenance. Compliance and audit tooling are Pro ($14.99/mo).
 
 ---
 
@@ -175,7 +158,6 @@ Pull requests welcome. Please open an issue first for significant changes.
 1. `npm install`
 2. `npm run compile` — TypeScript to `dist/`
 3. `npm run build` — bundle with `ncc` for the `runs.main: dist/index.js` entrypoint
-4. Test against a real repo with `act` (local GitHub Actions runner)
 
 ## License
 
