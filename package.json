@@ -1,7 +1,7 @@
 {
   "name": "reposcope-action",
-  "version": "1.0.1",
-  "description": "Security scanner + compliance posture reporter for GitHub Actions — by NxGen Tech Solutions",
+  "version": "1.0.2",
+  "description": "Security vulnerability scanner for GitHub Actions — PR review comments, CWE IDs, and a build-gating security score. By NxGen Tech Solutions.",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc --outDir build && ncc build build/index.js -o dist --minify --license dist/licenses.txt && rm -rf build",
@@ -17,14 +17,13 @@
   "keywords": [
     "github-action",
     "security",
-    "compliance",
-    "owasp",
-    "soc2",
-    "pci-dss",
-    "eu-ai-act",
+    "sast",
+    "secrets-detection",
     "code-scanner",
+    "static-analysis",
     "devsecops",
-    "vulnerability"
+    "vulnerability",
+    "cwe"
   ],
   "author": "NxGen Tech Solutions <support@reposcope.app>",
   "license": "MIT",

@@ -1,6 +1,6 @@
 name: RepoScope Security Scanner
 description: >-
-  Security scanner for your codebase. 44 detectors, PR review comments, CWE IDs, and a build-gating security score.
+  Security scanner for your codebase. 30 detectors, PR review comments, CWE IDs, and a build-gating security score.
 author: NxGen Tech Solutions
 branding:
   icon: shield

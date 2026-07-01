@@ -12,7 +12,7 @@
 
 On every pull request or push, RepoScope:
 
-1. **Scans every source file** with 44 security detectors across 14 languages — secrets, SQL injection, XSS, command injection, TLS misconfigs, weak crypto, and more.
+1. **Scans every source file** with 30 security detectors across 14 languages — secrets, SQL injection, XSS, command injection, TLS misconfigs, weak crypto, and more.
 2. **Posts one PR review comment per finding** — file, line number, severity badge, CWE ID, and a concrete fix hint.
 3. **Creates a GitHub Check** — `RepoScope Security — PASS` or `FAIL` with your configurable score threshold.
 4. **Generates an HTML security report** — findings by type + full detail, uploaded as a build artifact.
@@ -108,7 +108,7 @@ jobs:
 
 ## Security detectors
 
-RepoScope ships **44 detectors** across **14 languages**, including:
+RepoScope ships **30 detectors** across **14 languages**, including:
 
 | Category | Examples |
 |----------|----------|
