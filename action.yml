@@ -1,6 +1,6 @@
 name: RepoScope Security Scanner
 description: >-
-  Security scanner for your codebase. 30 detectors, PR review comments, CWE IDs, and a build-gating security score.
+  Security scanner + AI-code provenance for your codebase. 30 detectors, PR review comments, CWE IDs, and a security score.
 author: NxGen Tech Solutions
 branding:
   icon: shield
@@ -42,6 +42,14 @@ inputs:
     required: false
     default: 'true'
 
+  provenance:
+    description: >
+      When true, detect which scanned files are attributed to AI coding tools
+      in git history and write a machine-readable provenance.json record.
+      For accurate results, use fetch-depth: 0 on actions/checkout.
+    required: false
+    default: 'true'
+
   report-path:
     description: >
       Where to write the HTML security report inside the workspace.
@@ -64,6 +72,10 @@ outputs:
 
   high-count:
     description: Number of high severity findings.
+
+  ai-attributed-count:
+    description: >
+      Number of scanned files attributed to AI coding tools in git history.
 
   report-path:
     description: >

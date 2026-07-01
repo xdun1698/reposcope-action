@@ -11,6 +11,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import type { VulnFinding, ScanResult } from './scanner'
+import type { ProvenanceResult } from './provenance'
 
 // ─── Grouping helpers ─────────────────────────────────────────────────────────
 
@@ -38,6 +39,7 @@ function severityColor(sev: string): string {
 export function generateReport(
   result: ScanResult,
   repoName: string,
+  provenance?: ProvenanceResult,
   generatedAt: Date = new Date()
 ): string {
   const { findings, score, grade, counts } = result
@@ -55,6 +57,8 @@ export function generateReport(
       </tr>`
     )
     .join('')
+
+  const provenanceSection = buildProvenanceSection(provenance)
 
   const findingRows = findings
     .slice(0, 100)
@@ -134,6 +138,8 @@ export function generateReport(
       </table>
     </section>
 
+    ${provenanceSection}
+
     <!-- Compliance CTA (Pro) -->
     <div class="cta">
       <div style="font-size:15px;font-weight:600;margin-bottom:6px;">Need audit-ready compliance evidence?</div>
@@ -167,6 +173,59 @@ export function generateReport(
   </div>
 </body>
 </html>`
+}
+
+function buildProvenanceSection(provenance?: ProvenanceResult): string {
+  if (!provenance) return ''
+
+  const repoContext = provenance.repoSignals.length
+    ? `<div style="font-size:13px;color:#475569;margin-bottom:12px;">Repo context: ${provenance.repoSignals.map(escHtml).join(' · ')}</div>`
+    : ''
+
+  if (!provenance.gitAvailable) {
+    return `
+    <section style="margin-bottom:32px;">
+      <h2 style="font-size:18px;font-weight:600;margin-bottom:12px;">AI-Code Provenance</h2>
+      ${repoContext}
+      <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px;font-size:13px;color:#64748b;">
+        No git history was available, so per-file AI attribution was skipped. Add <code>fetch-depth: 0</code> to your <code>actions/checkout</code> step for full provenance.
+      </div>
+    </section>`
+  }
+
+  const rows = provenance.aiAttributed
+    .slice(0, 100)
+    .map(
+      (p) => `
+      <tr style="border-top:1px solid #f1f5f9;">
+        <td style="padding:8px 12px;font-family:monospace;font-size:12px;">${escHtml(p.file)}</td>
+        <td style="padding:8px 12px;font-size:12px;color:#64748b;">${escHtml(p.signals.join('; '))}</td>
+        <td style="padding:8px 12px;font-size:12px;text-align:right;text-transform:capitalize;">${p.confidence}</td>
+      </tr>`
+    )
+    .join('')
+
+  const table =
+    provenance.aiAttributedCount > 0
+      ? `<table style="width:100%;border-collapse:collapse;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">
+        <thead>
+          <tr style="background:#f8fafc;">
+            <th style="text-align:left;padding:10px 12px;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">File</th>
+            <th style="text-align:left;padding:10px 12px;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;">Signal</th>
+            <th style="text-align:right;padding:10px 12px;font-size:12px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;width:100px;">Confidence</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`
+      : `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:16px;font-size:13px;color:#22c55e;">No files in this scan were attributed to AI coding tools in git history.</div>`
+
+  return `
+    <section style="margin-bottom:32px;">
+      <h2 style="font-size:18px;font-weight:600;margin-bottom:4px;">AI-Code Provenance</h2>
+      <div style="font-size:13px;color:#64748b;margin-bottom:12px;">${provenance.aiAttributedCount} of ${provenance.filesChecked} scanned files attributed to AI coding tools in git history. A machine-readable <code>provenance.json</code> record is attached to this run.</div>
+      ${repoContext}
+      ${table}
+    </section>`
 }
 
 function escHtml(s: string): string {

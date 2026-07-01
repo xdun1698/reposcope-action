@@ -523,9 +523,15 @@ function walkDir(dir: string, root: string, results: string[]): void {
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
+/** Returns the absolute paths of all scannable source files under `workspacePath`. */
+export function listSourceFiles(workspacePath: string): string[] {
+  const files: string[] = []
+  walkDir(workspacePath, workspacePath, files)
+  return files
+}
+
 export async function scanWorkspace(workspacePath: string): Promise<ScanResult> {
-  const allFiles: string[] = []
-  walkDir(workspacePath, workspacePath, allFiles)
+  const allFiles = listSourceFiles(workspacePath)
 
   const allFindings: VulnFinding[] = []
   let filesScanned = 0

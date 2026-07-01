@@ -6,6 +6,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import type { VulnFinding, ScanResult } from './scanner'
+import type { ProvenanceResult } from './provenance'
 
 type Octokit = ReturnType<typeof github.getOctokit>
 
@@ -105,7 +106,8 @@ export async function postSummaryComment(
   pullNumber: number,
   result: ScanResult,
   threshold: number,
-  artifactUrl?: string
+  artifactUrl?: string,
+  provenance?: ProvenanceResult
 ): Promise<void> {
   const { score, grade, counts, findings } = result
   const passed = score >= threshold
@@ -137,8 +139,16 @@ export async function postSummaryComment(
     }
   }
 
+  if (provenance && provenance.gitAvailable) {
+    lines.push(
+      '',
+      `**AI-code provenance:** ${provenance.aiAttributedCount} of ${provenance.filesChecked} files attributed to AI coding tools in git history` +
+        (provenance.aiAttributedCount > 0 ? ' — see the `provenance.json` record in the run artifact.' : '.')
+    )
+  }
+
   if (artifactUrl) {
-    lines.push('', `[View full compliance report](${artifactUrl})`)
+    lines.push('', `[View full security report](${artifactUrl})`)
   }
 
   lines.push('', '_[Install RepoScope](https://marketplace.visualstudio.com/items?itemName=nxgentech.reposcope-ai) to see findings live in your editor._')

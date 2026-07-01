@@ -1,7 +1,7 @@
 {
   "name": "reposcope-action",
-  "version": "1.0.2",
-  "description": "Security vulnerability scanner for GitHub Actions — PR review comments, CWE IDs, and a build-gating security score. By NxGen Tech Solutions.",
+  "version": "1.0.3",
+  "description": "Security scanner + AI-code provenance for GitHub Actions — PR review comments, CWE IDs, a build-gating security score, and an AI-authorship audit trail. By NxGen Tech Solutions.",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc --outDir build && ncc build build/index.js -o dist --minify --license dist/licenses.txt && rm -rf build",
@@ -23,7 +23,9 @@
     "static-analysis",
     "devsecops",
     "vulnerability",
-    "cwe"
+    "cwe",
+    "ai-provenance",
+    "ai-generated-code"
   ],
   "author": "NxGen Tech Solutions <support@reposcope.app>",
   "license": "MIT",

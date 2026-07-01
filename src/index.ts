@@ -16,7 +16,11 @@ import * as github from '@actions/github'
 import { DefaultArtifactClient } from '@actions/artifact'
 import * as path from 'path'
 
-import { scanWorkspace } from './scanner'
+import * as fs from 'fs'
+
+import { scanWorkspace, listSourceFiles } from './scanner'
+import { scanProvenance, buildProvenanceRecord } from './provenance'
+import type { ProvenanceResult } from './provenance'
 import { postPrReviewComments, postSummaryComment, createCheckRun } from './commenter'
 import { generateReport, writeReport } from './reporter'
 
@@ -29,6 +33,7 @@ async function run(): Promise<void> {
     const failOn = core.getInput('fail-on') || 'high'
     const threshold = parseInt(core.getInput('threshold') || '0', 10)
     const commentOnPr = core.getInput('comment-on-pr') !== 'false'
+    const provenanceEnabled = core.getInput('provenance') !== 'false'
     const reportRelPath = core.getInput('report-path') || '.reposcope/report.html'
     const reportAbsPath = path.resolve(workspacePath, reportRelPath)
 
@@ -52,21 +57,44 @@ async function run(): Promise<void> {
     core.info(`Score: ${result.score}/100 (${result.grade})`)
     core.endGroup()
 
+    // ── Provenance (AI-code authorship) ─────────────────────────────────────────
+
+    let provenance: ProvenanceResult | undefined
+    if (provenanceEnabled) {
+      core.startGroup('RepoScope — AI-code provenance')
+      provenance = scanProvenance(workspacePath, listSourceFiles(workspacePath))
+      if (!provenance.gitAvailable) {
+        core.info('No git history available — provenance skipped (use fetch-depth: 0 in actions/checkout for accurate results).')
+      } else {
+        core.info(`Provenance: ${provenance.aiAttributedCount} of ${provenance.filesChecked} files attributed to AI tools in git history.`)
+      }
+      core.endGroup()
+    }
+
     // ── Report ────────────────────────────────────────────────────────────────
 
     core.startGroup('RepoScope — generating report')
     const repoName = `${owner}/${repo}`
-    const html = generateReport(result, repoName)
+    const html = generateReport(result, repoName, provenance)
     writeReport(html, reportAbsPath)
     core.info(`Report written to ${reportAbsPath}`)
+
+    // Write the machine-readable provenance record alongside the report
+    const artifactFiles = [reportAbsPath]
+    if (provenance) {
+      const recordPath = path.resolve(path.dirname(reportAbsPath), 'provenance.json')
+      fs.writeFileSync(recordPath, buildProvenanceRecord(provenance, repoName, ctx.sha), 'utf8')
+      artifactFiles.push(recordPath)
+      core.info(`Provenance record written to ${recordPath}`)
+    }
     core.endGroup()
 
     // Upload artifact
     let artifactUrl: string | undefined
     try {
       const artifactClient = new DefaultArtifactClient()
-      await artifactClient.uploadArtifact('reposcope-report', [reportAbsPath], workspacePath)
-      core.info('Compliance report uploaded as GitHub Actions artifact: reposcope-report')
+      await artifactClient.uploadArtifact('reposcope-report', artifactFiles, workspacePath)
+      core.info('Security report uploaded as GitHub Actions artifact: reposcope-report')
     } catch (err) {
       core.warning(`Artifact upload failed: ${err}`)
     }
@@ -85,7 +113,7 @@ async function run(): Promise<void> {
         )
         core.info(`Inline comments: ${posted} posted, ${skipped} skipped (not in diff)`)
 
-        await postSummaryComment(octokit, owner, repo, pullNumber, result, threshold, artifactUrl)
+        await postSummaryComment(octokit, owner, repo, pullNumber, result, threshold, artifactUrl, provenance)
         core.info('Summary comment posted')
         core.endGroup()
 
@@ -109,6 +137,7 @@ async function run(): Promise<void> {
     core.setOutput('findings-count', String(result.findings.length))
     core.setOutput('critical-count', String(result.counts.critical))
     core.setOutput('high-count', String(result.counts.high))
+    core.setOutput('ai-attributed-count', String(provenance?.aiAttributedCount ?? 0))
     core.setOutput('report-path', reportAbsPath)
 
     // ── Pass / fail gate ──────────────────────────────────────────────────────
