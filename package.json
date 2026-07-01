@@ -1,6 +1,6 @@
 {
   "name": "reposcope-action",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Security scanner + AI-code provenance for GitHub Actions — PR review comments, CWE IDs, a build-gating security score, and an AI-authorship audit trail. By NxGen Tech Solutions.",
   "main": "dist/index.js",
   "scripts": {
