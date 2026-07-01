@@ -3,6 +3,7 @@
 > Scan your codebase for security vulnerabilities, map findings to 5 compliance frameworks, and generate an audit-ready evidence package — all from your GitHub Actions workflow.
 
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-RepoScope-blue?logo=github)](https://github.com/marketplace/actions/reposcope-security-compliance-scanner)
+[![GitHub repo](https://img.shields.io/badge/Source-xdun1698%2Freposcope--action-lightgrey?logo=github)](https://github.com/xdun1698/reposcope-action)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
@@ -38,7 +39,7 @@ jobs:
       checks: write           # for GitHub Check runs
     steps:
       - uses: actions/checkout@v4
-      - uses: nxgentech/reposcope-action@v1
+      - uses: xdun1698/reposcope-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -74,7 +75,7 @@ jobs:
 ### Only alert, never fail
 
 ```yaml
-- uses: nxgentech/reposcope-action@v1
+- uses: xdun1698/reposcope-action@v1
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     fail-on: none
@@ -83,7 +84,7 @@ jobs:
 ### Fail on any critical finding, require score ≥ 80
 
 ```yaml
-- uses: nxgentech/reposcope-action@v1
+- uses: xdun1698/reposcope-action@v1
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     fail-on: critical
@@ -93,7 +94,7 @@ jobs:
 ### Full EU AI Act + ISO 42001 compliance report
 
 ```yaml
-- uses: nxgentech/reposcope-action@v1
+- uses: xdun1698/reposcope-action@v1
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
     frameworks: owasp,soc2,pci-dss,eu-ai-act,iso-42001
@@ -104,7 +105,7 @@ jobs:
 ### Use outputs in a downstream step
 
 ```yaml
-- uses: nxgentech/reposcope-action@v1
+- uses: xdun1698/reposcope-action@v1
   id: reposcope
   with:
     token: ${{ secrets.GITHUB_TOKEN }}
