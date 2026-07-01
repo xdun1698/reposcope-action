@@ -1,6 +1,6 @@
 {
   "name": "reposcope-action",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Security scanner + compliance posture reporter for GitHub Actions — by NxGen Tech Solutions",
   "main": "dist/index.js",
   "scripts": {
